@@ -1,0 +1,36 @@
+plugins {
+	id 'org.springframework.boot' version '2.4.4'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'accela.coding'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	maven { url 'https://repo.spring.io/release' }
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	implementation 'org.xerial:sqlite-jdbc:3.32.3.2'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compile group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+	compile group: 'io.springfox', name: 'springfox-swagger-ui'
+
+}
+
+test {
+	useJUnitPlatform()
+}
+
+bootRun {
+	standardInput = System.in
+}
+//bootBuildImage {
+//	builder = 'paketobuildpacks/builder:tiny'
+//	environment = ['BP_NATIVE_IMAGE': 'true']
+//}
