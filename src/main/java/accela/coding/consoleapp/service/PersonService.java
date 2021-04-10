@@ -15,7 +15,6 @@ public interface PersonService {
 
 	public void addUser(PersonModel person);
 	public String deletePersonById(Integer id);
-
 	public List<PersonModel> getAllPersonDetails();
 	public long getCount();
 
