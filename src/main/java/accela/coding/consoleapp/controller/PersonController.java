@@ -1,6 +1,5 @@
 package accela.coding.consoleapp.controller;
 
-import accela.coding.consoleapp.CustomException.InvalidUserInputException;
 import accela.coding.consoleapp.model.AddressModel;
 import accela.coding.consoleapp.model.PersonModel;
 import accela.coding.consoleapp.service.AddressService;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest")
@@ -23,8 +21,8 @@ public class PersonController {
 
 	/**
 	 * Function to add new person.
-	 * @param person
-	 * @return result string
+	 * @param person person model
+	 * @return person added confirm message: String
 	 */
 	@PostMapping("/person/add")
 	public String addPerson(@RequestBody PersonModel person) {
@@ -33,8 +31,8 @@ public class PersonController {
 
 	/**
 	 * Delete person using personId
-	 * @param personid
-	 * @return
+	 * @param personid ID of the person
+	 * @return person deleted confirm message: String
 	 */
 	@DeleteMapping("/person/delete/{personid}")
 	public String deletePersonById(@PathVariable Integer personid){
@@ -43,18 +41,18 @@ public class PersonController {
 
 	/**
 	 * Update Person using person ID
-	 * @param personid
-	 * @param person
+	 * @param personid Person ID
+	 * @param person Person Model contains person details
 	 * @return success or failure message
-	 * @throws Exception
 	 */
 	@PatchMapping("/person/update/{personid}")
-	public String updatePersonById(@PathVariable Integer personid, @RequestBody PersonModel person) throws Exception {
+	public String updatePersonById(@PathVariable Integer personid, @RequestBody PersonModel person) {
 		return personService.updatePersonByPersonId(personid, person);
 	}
 
-	/*
-	Get all details - GET
+	/**
+	 *
+	 * Get all details - GET
 	 */
 	@GetMapping("/person/listdetails")
 	public List<PersonModel> getPersonDetails(){
@@ -72,10 +70,9 @@ public class PersonController {
 
 	/**
 	 * Add address details to person using person
-	 * @param personid
-	 * @param address
+	 * @param personid person ID
+	 * @param address Address model contains address details
 	 * @return update success or failure message
-	 * @throws InvalidUserInputException
 	 */
 	@PostMapping("/person/{personid}/address/add")
 	public String addAddressDetails(@PathVariable Integer personid, @RequestBody AddressModel address){

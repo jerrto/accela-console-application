@@ -4,14 +4,11 @@ import accela.coding.consoleapp.model.AddressModel;
 import accela.coding.consoleapp.model.PersonModel;
 import accela.coding.consoleapp.repository.AddressRepository;
 import accela.coding.consoleapp.repository.PersonRepository;
-import accela.coding.consoleapp.service.AddressComponent;
-import accela.coding.consoleapp.service.PersonComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,9 +19,6 @@ import java.util.Scanner;
 @SpringBootApplication
 public class AccelaConsoleAppMain implements CommandLineRunner {
 
-	PersonComponent personComponent = new PersonComponent();
-	AddressComponent addressComponent = new AddressComponent();
-
 	@Autowired
 	private PersonRepository per;
 
@@ -32,6 +26,10 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	private AddressRepository addr;
 
 	Scanner sc = new Scanner(System.in);
+
+	public AccelaConsoleAppMain() {
+	}
+
 	public static void main(String[] args) {
 		String url = "jdbc:sqlite:C:/sqlite/test.db";
 		createNewDatabase(url);
@@ -43,6 +41,7 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		operations();
+		throw  new Exception();
 	}
 
 	private void operations() {
@@ -64,7 +63,6 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 		{
 			input = sc.nextInt();
 		}
-		//sc.close();
 		switch (input) {
 			case 1:
 				inputPerson();
@@ -132,20 +130,10 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 			System.out.println("******************************************************************************");
 
 		}
-		//sc.close();
 		operations();
-		/*
-		AddressModel address1 = new AddressModel("123 craftsman st", "boston", "GA", "90815", person);
-		AddressModel address2 = new AddressModel("456 craftsman st", "Atlanta", "MA", "30097", person);
-		List<AddressModel> address = Arrays.asList(address1,address2);
-		person.setAddress(address);
-		per.save(person);
-		per.delete(person);*/
 	}
 
 	private void editPerson() {
-		//Scanner sc = new Scanner(System.in);
-		PersonModel result = null;
 		System.out.println("Enter The person ID:");
 		int id = sc.nextInt();
 		System.out.println("Enter First Name to change:");
@@ -162,19 +150,16 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 			if(person.getPersonlastname() != null) {
 				personModel.setPersonlastname(person.getPersonlastname());
 			}
-			result = per.save(personModel);
+			per.save(personModel);
 			System.out.println("******************************************************************************");
 			System.out.println("Person with person ID: "+id +" updated successfully.");
 			System.out.println("******************************************************************************");
-			//result = "Person with person ID: "+id +" updated successfully.";
 		}
 		operations();
-		//sc.close();
 	}
 
 	private void deletePerson()
 	{
-		//Scanner sc = new Scanner(System.in);
 		System.out.println("Enter The person ID:");
 		int id = sc.nextInt();
 		per.deleteById(id);
@@ -182,7 +167,6 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 		System.out.println("Person with person ID: "+id +" deleted successfully.");
 		System.out.println("******************************************************************************");
 		operations();
-		//sc.close();
 	}
 
 	private void inputAddress() {
@@ -291,7 +275,7 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 
 	/**
 	 * Create database
-	 * @param url
+	 * @param url url to connect to db
 	 */
 	public static void createNewDatabase(String url) {
 		try {
@@ -308,7 +292,7 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 
 	/**
 	 * cretae new tables
-	 * @param url
+	 * @param url url to connect to db
 	 */
 	private static void createNewTables(String url) {
 		String sqlPerson = "CREATE TABLE IF NOT EXISTS Person (pid integer PRIMARY KEY AUTOINCREMENT, personfirstname text NOT NULL,personlastname real);";

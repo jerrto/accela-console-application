@@ -22,7 +22,7 @@ public class PersonComponent implements PersonService{
     @Override
     public String addUser(PersonModel person) throws InvalidUserInputException {
         Optional<PersonModel> personResult = Optional.ofNullable(person);
-        String result = null;
+        String result;
         if(personResult.isPresent()) {
             List<AddressModel> add = person.getAddress();
             if(!add.isEmpty()) {
@@ -46,11 +46,10 @@ public class PersonComponent implements PersonService{
 
     @Override
     public String updatePersonByPersonId(Integer id, PersonModel person) throws InvalidUserInputException {
-        String result = null;
+        String result;
         PersonModel personModel = personRepository.findById(id).orElse(null);
         Optional<PersonModel> personResult = Optional.ofNullable(personModel);
         if(personResult.isPresent()) {
-            PersonModel pm = null;
             if(person.getPersonfirstname() != null) {
                 personModel.setPersonfirstname(person.getPersonfirstname());
             }
