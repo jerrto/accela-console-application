@@ -21,7 +21,7 @@ public class AddressComponent implements AddressService{
 
     @Override
     public String addAddressDetails(Integer id, AddressModel address) throws InvalidUserInputException {
-        String result = null;
+        String result;
         PersonModel personModel = personRepository.findById(id).orElse(null);
         Optional<PersonModel> personResult = Optional.ofNullable(personModel);
         if(personResult.isPresent()) {
@@ -36,7 +36,7 @@ public class AddressComponent implements AddressService{
 
     @Override
     public String updateAddressDetails(Integer pid, Integer aid, AddressModel address) throws InvalidUserInputException {
-        String result = null;
+        String result;
         PersonModel personModel = personRepository.findById(pid).orElse(null);
         Optional<PersonModel> personResult = Optional.ofNullable(personModel);
         AddressModel addressModel = addressRepository.findById(aid).orElse(null);
