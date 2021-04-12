@@ -18,22 +18,17 @@ public class PersonModel {
     @SequenceGenerator(name = "id_Sequence", sequenceName = "ID_SEQ")*/
 
 	private int pid;
-
-
 	private String personfirstname;
-
-
 	private String personlastname;
-
-
     private List<AddressModel> address = new ArrayList<>();
-
-    public PersonModel() {
-    }
 
     public PersonModel(String personfirstname, String personlastname) {
         this.personfirstname = personfirstname;
         this.personlastname = personlastname;
+    }
+
+    public PersonModel() {
+
     }
 
     @Id

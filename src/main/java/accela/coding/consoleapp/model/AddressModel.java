@@ -1,24 +1,15 @@
-
 package accela.coding.consoleapp.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
-import java.util.List;
 
     @Entity
     @Table(name = "Address")
     public class AddressModel {
 
 	private int aid;
-
 	private String street;
-
 	private String city;
-
 	private String state;
-
     private String zipcode;
 
     private PersonModel person;
@@ -33,6 +24,7 @@ import java.util.List;
         this.zipcode = zipcode;
         this.person = person;
     }
+
 
     @Column(name="street")
     public String getStreet() {
@@ -87,20 +79,7 @@ import java.util.List;
         return person;
     }
 
-/*
-    @Column(name = "person_id")
-    private int person_id;
-
-        public int getPerson_id() {
-            return person_id;
-        }
-
-        public void setPerson_id(int person_id) {
-            this.person_id = person_id;
-        }
-*/
-
-       public void setPerson(PersonModel person) {
+    public void setPerson(PersonModel person) {
         this.person = person;
     }
 }

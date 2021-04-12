@@ -2,98 +2,299 @@ package accela.coding.consoleapp;
 
 import accela.coding.consoleapp.model.AddressModel;
 import accela.coding.consoleapp.model.PersonModel;
+import accela.coding.consoleapp.repository.AddressRepository;
 import accela.coding.consoleapp.repository.PersonRepository;
-import org.springframework.beans.factory.annotation.Value;
+import accela.coding.consoleapp.service.AddressComponent;
+import accela.coding.consoleapp.service.PersonComponent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.sql.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 @SpringBootApplication
-@EnableSwagger2
-public class AccelaConsoleAppMain implements  CommandLineRunner{
+public class AccelaConsoleAppMain implements CommandLineRunner {
 
+	PersonComponent personComponent = new PersonComponent();
+	AddressComponent addressComponent = new AddressComponent();
+
+	@Autowired
+	private PersonRepository per;
+
+	@Autowired
+	private AddressRepository addr;
+
+	Scanner sc = new Scanner(System.in);
 	public static void main(String[] args) {
-		//ConfigurableApplicationContext configurableApplicationContext =
-
-		String url = "jdbc:sqlite:C:/sqlite/db/test.db";
+		String url = "jdbc:sqlite:C:/sqlite/test.db";
 		createNewDatabase(url);
-		System.out.println(
-				"LOY");
 		createNewTables(url);
 
-		//String name = sc.nextLine();
-		System.out.println("Select from below to perform an operation:\n");
-		System.out.println("1. Add Person (id, firstName, lastName)");
-		System.out.println("2. Edit Person (firstName, lastName) - DONE");
-		System.out.println("3. Delete Person (id)");
-		System.out.println("4. Add Address to person [multiple required] (id, street, city, state, postalCode) DONE");
-		System.out.println("5. Edit Address (street, city, state, postalCode) DONE");
-		System.out.println("6. Delete Address (id) DONE");
-		System.out.println("7. Count Number of Persons - DONE");
+		ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(AccelaConsoleAppMain.class, args);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		operations();
+	}
+
+	private void operations() {
+		System.out.println("");
+		System.out.println("================================================   SELECT OPERATION   ================================================");
+		System.out.println("");
+		System.out.println("Select from below to perform an operation:");
+		System.out.println("1. Add Person (id, firstName, lastName):");
+		System.out.println("2. Edit Person (firstName, lastName):");
+		System.out.println("3. Delete Person (id):");
+		System.out.println("4. Add Address to person [multiple required] (id, street, city, state, postalCode):");
+		System.out.println("5. Edit Address (street, city, state, postalCode):");
+		System.out.println("6. Delete Address (id):");
+		System.out.println("7. Count Number of Persons:");
 		System.out.println("8. List Persons:");
-		SpringApplication.run(AccelaConsoleAppMain.class, args);
+		int input = 0;
 
+		if(sc.hasNextInt())
+		{
+			input = sc.nextInt();
+		}
+		//sc.close();
+		switch (input) {
+			case 1:
+				inputPerson();
+				break;
+			case 2:
+				editPerson();
+				break;
+			case 3:
+				deletePerson();
+				break;
+			case 4:
+				inputAddress();
+				break;
+			case 5:
+				editAddress();
+				break;
+			case 6:
+				deleteAddress();
+				break;
+			case 7:
+				countPersons();
+				break;
+			case 8:
+				listPersons();
+				break;
+		}
+		operations();
+	}
 
+	private void inputPerson() {
+		PersonModel result = null;
+		//Scanner sc = new Scanner(System.in);
+		System.out.println("Enter First Name:");
+		String firstName = sc.nextLine();
+		System.out.println("Enter Last Name:");
+		String lastName = sc.nextLine();
+		PersonModel person = new PersonModel(firstName, lastName);
+		System.out.println("Do you have a valid address? (Yes/No)");
+		String addressYesNo = sc.nextLine();
+		if("yes".equals(addressYesNo.toLowerCase())) {
+			System.out.println("How many addresses do you want to add? (More than 1 allowed)");
+			int addressCount = sc.nextInt();
+			List<AddressModel> address = new ArrayList<>();
+			for(int i = 0; i < addressCount; i++) {
+				System.out.println("Enter address "+i+1+" details:");
+				System.out.println("Enter the street:");
+				String street = sc.nextLine();
+				System.out.println("Enter the city:");
+				String city = sc.nextLine();
+				System.out.println("Enter the state:");
+				String state = sc.nextLine();
+				System.out.println("Enter the zipcode:");
+				String zipcode = sc.nextLine();
+				AddressModel addressModel = new AddressModel(street, city, state, zipcode, person);
+				address.add(addressModel);
+			}
+			person.setAddress(address);
+			result = per.save(person);
+		} else {
+			per.save(person);
+		}
+		if(result != null) {
+			System.out.println("******************************************************************************");
+			System.out.println("User Added Successfully");
+			System.out.println("******************************************************************************");
 
-		/*PersonRepository per = configurableApplicationContext.getBean(PersonRepository.class);
-		PersonModel person = new PersonModel("testfirst1", "testlast2");
+		}
+		//sc.close();
+		operations();
+		/*
 		AddressModel address1 = new AddressModel("123 craftsman st", "boston", "GA", "90815", person);
 		AddressModel address2 = new AddressModel("456 craftsman st", "Atlanta", "MA", "30097", person);
 		List<AddressModel> address = Arrays.asList(address1,address2);
 		person.setAddress(address);
 		per.save(person);
 		per.delete(person);*/
-
 	}
 
-	@Override
-	public void run(String... args) throws Exception {
-		System.out.println("Inside run function..");
-		int input = 0;
-		Scanner scanner = new Scanner(System.in);
-
-		if(scanner.hasNextInt())
-		{
-			input = scanner.nextInt();
+	private void editPerson() {
+		//Scanner sc = new Scanner(System.in);
+		PersonModel result = null;
+		System.out.println("Enter The person ID:");
+		int id = sc.nextInt();
+		System.out.println("Enter First Name to change:");
+		String firstName = sc.nextLine();
+		System.out.println("Enter Last Name to change:");
+		String lastName = sc.nextLine();
+		PersonModel person = new PersonModel(firstName, lastName);
+		PersonModel personModel = per.findById(id).orElse(null);
+		Optional<PersonModel> personResult = Optional.ofNullable(personModel);
+		if(personResult.isPresent()) {
+			if(person.getPersonfirstname() != null) {
+				personModel.setPersonfirstname(person.getPersonfirstname());
+			}
+			if(person.getPersonlastname() != null) {
+				personModel.setPersonlastname(person.getPersonlastname());
+			}
+			result = per.save(personModel);
+			System.out.println("******************************************************************************");
+			System.out.println("Person with person ID: "+id +" updated successfully.");
+			System.out.println("******************************************************************************");
+			//result = "Person with person ID: "+id +" updated successfully.";
 		}
-		System.out.println("input: "+input);
-		if(input == 1) {
-			System.out.println("Enter First Name:");
-			String firstName = scanner.nextLine();
-			System.out.println("Enter Last Name:");
-			String lastName = scanner.nextLine();
-			final String uri = "http://localhost:8086/rest/person/add";
-			//personService.addUser(person);
-			RestTemplate restTemplate = new RestTemplate();
-			String result = restTemplate.getForObject(uri, String.class);
-		} else {
-			System.out.println("else");
+		operations();
+		//sc.close();
+	}
+
+	private void deletePerson()
+	{
+		//Scanner sc = new Scanner(System.in);
+		System.out.println("Enter The person ID:");
+		int id = sc.nextInt();
+		per.deleteById(id);
+		System.out.println("******************************************************************************");
+		System.out.println("Person with person ID: "+id +" deleted successfully.");
+		System.out.println("******************************************************************************");
+		operations();
+		//sc.close();
+	}
+
+	private void inputAddress() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter The person ID:");
+		int id = sc.nextInt();
+		System.out.println("Enter the street:");
+		String street = sc.nextLine();
+		System.out.println("Enter the city:");
+		String city = sc.nextLine();
+		System.out.println("Enter the state:");
+		String state = sc.nextLine();
+		System.out.println("Enter the zipcode:");
+		String zipcode = sc.nextLine();
+		PersonModel personModel = per.findById(id).orElse(null);
+		Optional<PersonModel> personResult = Optional.ofNullable(personModel);
+		if(personResult.isPresent()) {
+			AddressModel addressModel = new AddressModel();
+			addressModel.setStreet(street);
+			addressModel.setCity(city);
+			addressModel.setState(state);
+			addressModel.setZipcode(zipcode);
+			addressModel.setPerson(personModel);
+			addr.save(addressModel);
+			System.out.println("******************************************************************************");
+			System.out.println("New address added to Person ID: "+ id + " successfully");
+			System.out.println("******************************************************************************");
 		}
-
-	}
-	@Bean
-	public Docket productApi() {
-		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("accela.coding.consoleapp")).build();
+		operations();
 	}
 
+	private void editAddress() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter The person ID:");
+		int pid = sc.nextInt();
+		System.out.println("Enter The Address ID:");
+		int aid = sc.nextInt();
+		System.out.println("Enter the street:");
+		String street = sc.nextLine();
+		System.out.println("Enter the city:");
+		String city = sc.nextLine();
+		System.out.println("Enter the state:");
+		String state = sc.nextLine();
+		System.out.println("Enter the zipcode:");
+		String zipcode = sc.nextLine();
+		AddressModel address = new AddressModel();
+		address.setStreet(street);
+		address.setCity(city);
+		address.setState(state);
+		address.setZipcode(zipcode);
+
+		PersonModel personModel = per.findById(pid).orElse(null);
+		Optional<PersonModel> personResult = Optional.ofNullable(personModel);
+
+		AddressModel addressModel = addr.findById(aid).orElse(null);
+		Optional<AddressModel> addressResult = Optional.ofNullable(addressModel);
+
+		if(personResult.isPresent() && addressResult.isPresent()) {
+			address.setPerson(personModel);
+			if(!address.getStreet().isEmpty()) {
+				addressModel.setStreet(address.getStreet());
+			}
+			if(!address.getCity().isEmpty()) {
+				addressModel.setCity(address.getCity());
+			}
+			if(!address.getState().isEmpty()) {
+				addressModel.setState(address.getState());
+			}
+			if(!address.getZipcode().isEmpty()) {
+				addressModel.setZipcode(address.getZipcode());
+			}
+			addr.save(addressModel);
+			System.out.println("******************************************************************************");
+			System.out.println("Address Updated Successfully for Person ID: "+ pid + " and Address ID: "+aid+"successfully");
+			System.out.println("******************************************************************************");
+		}
+		operations();
+	}
+
+	private void deleteAddress() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter The Address ID:");
+		int id = sc.nextInt();
+		addr.deleteById(id);
+		System.out.println("******************************************************************************");
+		System.out.println("Address with address ID: "+id +" deleted successfully.");
+		System.out.println("******************************************************************************");
+		operations();
+	}
+
+	private void countPersons() {
+		int count = (int) per.count();
+		System.out.println("******************************************************************************");
+		System.out.println("No of persons in system: "+ count);
+		System.out.println("******************************************************************************");
+		operations();
+	}
+
+	private void listPersons() {
+		/*List<PersonModel> list = (List<PersonModel>) per.findAll();
+		for(PersonModel l : list) {
+		l.ge
+		}
+		operations();*/
+	}
+
+	/**
+	 * Create database
+	 * @param url
+	 */
 	public static void createNewDatabase(String url) {
 		try {
-
 			Connection conn = DriverManager.getConnection(url);
 			if (conn != null) {
 				DatabaseMetaData meta = conn.getMetaData();
@@ -105,32 +306,20 @@ public class AccelaConsoleAppMain implements  CommandLineRunner{
 		}
 	}
 
+	/**
+	 * cretae new tables
+	 * @param url
+	 */
 	private static void createNewTables(String url) {
 		String sqlPerson = "CREATE TABLE IF NOT EXISTS Person (pid integer PRIMARY KEY AUTOINCREMENT, personfirstname text NOT NULL,personlastname real);";
 		String sqlAddress = "CREATE TABLE IF NOT EXISTS Address (aid integer PRIMARY KEY AUTOINCREMENT, street text, city text, state text, zipcode text, person_id integer NOT NULL, \n" +
 				"FOREIGN KEY (person_id)\n" +
 				"REFERENCES Person(pid) ON DELETE CASCADE)";
-
-
 		try (Connection conn = DriverManager.getConnection(url);
 			 Statement stmt = conn.createStatement()) {
-			// create a new table
-			stmt.execute(sqlPerson);
-			stmt.execute(sqlAddress);
+			System.out.println("Tables created succesfully");
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
 	}
-	//PRAGMA foreign_keys = ON;
-/*	@Bean
-	public WebMvcConfigurer corsConfigurer(){
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/accelaconsoleapp/**")
-						.allowedOrigins("http://localhost:8085",
-								"http://localhost:8082");
-			}
-		};
-	}*/
 }

@@ -1,8 +1,6 @@
 package accela.coding.consoleapp.controller;
 
-
 import accela.coding.consoleapp.CustomException.InvalidUserInputException;
-import accela.coding.consoleapp.CustomException.ItemNotFoundException;
 import accela.coding.consoleapp.model.AddressModel;
 import accela.coding.consoleapp.model.PersonModel;
 import accela.coding.consoleapp.service.AddressService;
@@ -10,10 +8,8 @@ import accela.coding.consoleapp.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rest")
@@ -25,116 +21,73 @@ public class PersonController {
 	@Autowired
 	private AddressService addressService;
 
-	/*
-	Add Person - POST
+	/**
+	 * Function to add new person.
+	 * @param person
+	 * @return result string
 	 */
 	@PostMapping("/person/add")
 	public String addPerson(@RequestBody PersonModel person) {
-		System.out.println(person);
-		List<AddressModel> add = person.getAddress();
-		if(!add.isEmpty()) {
-			for (AddressModel item : add) {
-				item.setPerson(person);
-			}
-		}
-		personService.addUser(person);
-		return "success";
+		return personService.addUser(person);
 	}
 
-	/*
-	Delete Person - DELETE
+	/**
+	 * Delete person using personId
+	 * @param personid
+	 * @return
 	 */
-	@DeleteMapping("/person/delete/{id}")
-	public String deletePersonById(@PathVariable Integer id){
-		return personService.deletePersonById(id);
+	@DeleteMapping("/person/delete/{personid}")
+	public String deletePersonById(@PathVariable Integer personid){
+		return personService.deletePersonById(personid);
 	}
 
-	/*
-	Update Person Details - PUT
+	/**
+	 * Update Person using person ID
+	 * @param personid
+	 * @param person
+	 * @return success or failure message
+	 * @throws Exception
 	 */
-	@PatchMapping("/person/update/{perso35nid}")
+	@PatchMapping("/person/update/{personid}")
 	public String updatePersonById(@PathVariable Integer personid, @RequestBody PersonModel person) throws Exception {
-		PersonModel personModel = personService.getById(personid);
-		Optional<PersonModel> result = Optional.ofNullable(person);
-		if(result.isPresent()) {
-			PersonModel pm = null;
-			if(person.getPersonfirstname() != null) {
-				personModel.setPersonfirstname(person.getPersonfirstname());
-			}
-			if(person.getPersonlastname() != null) {
-				personModel.setPersonlastname(person.getPersonlastname());
-			}
-			if(person.getAddress() != null) {
-				personModel.setAddress(person.getAddress());
-			}
-		} else {
-			throw new Exception("Person ID is invalid. Please enter a valid Person ID");
-		}
-		return "updated record";
+		return personService.updatePersonByPersonId(personid, person);
 	}
 
 	/*
-	Get all details -  GET
+	Get all details - GET
 	 */
 	@GetMapping("/person/listdetails")
 	public List<PersonModel> getPersonDetails(){
-		List<PersonModel> personList =  personService.getAllPersonDetails();
-		return personList;
+		return personService.getAllPersonDetails();
 	}
 
-	/*
-	Get person count -  GET
+	/**
+	 * Get person count
+	 * @return long count
 	 */
 	@GetMapping("/person/count")
 	public long getPersonCount() {
 		return personService.getCount();
 	}
-	/*
-	*//*
-	Add Person - POST
+
+	/**
+	 * Add address details to person using person
+	 * @param personid
+	 * @param address
+	 * @return update success or failure message
+	 * @throws InvalidUserInputException
 	 */
 	@PostMapping("/person/{personid}/address/add")
-	public String addContactDetails(@PathVariable Integer personid, @RequestBody AddressModel address) throws ItemNotFoundException {
-		PersonModel person = personService.getById(personid);
-		Optional<PersonModel> result = Optional.ofNullable(person);
-		if(!result.isPresent()) {
-			throw new ItemNotFoundException(personid);
-		}
-		address.setPerson(person);
-		personService.addContactDetails(address);
-		return "New address added to person ID: "+personid+ " successfully";
+	public String addAddressDetails(@PathVariable Integer personid, @RequestBody AddressModel address){
+		return addressService.addAddressDetails(personid, address);
 	}
 
-
-	/*Update aDDRESS Details - PUT
-	 */
+	/*
+	Update ADDRESS Details - PUT
+	*/
 	@PatchMapping("/person/update/{personid}/address/{addressid}")
-	public String updateAddress(@PathVariable Integer personid, @PathVariable Integer addressid, @RequestBody AddressModel address){
-		AddressModel addressModel = addressService.getById(addressid);
-		//Optional<AddressModel> addressModel = Optional.ofNullable(addressService.getById(addressid));
-		/*if(addressModel.isPresent()){
-
-		}*/
-		//Use optional Java 8
-		if(addressModel == null) {
-			return "Invalid Address ID";
-		}
-		if(!address.getStreet().isEmpty()) {
-			addressModel.setStreet(address.getStreet());
-		}
-		if(!address.getCity().isEmpty()) {
-			addressModel.setCity(address.getCity());
-		}
-		if(!address.getState().isEmpty()) {
-			addressModel.setState(address.getState());
-		}
-		if(!address.getZipcode().isEmpty()) {
-			addressModel.setZipcode(address.getZipcode());
-		}
-		addressService.addAddress(addressModel);
-		return "updated address";
-
-
+	public String updateAddressDetails(@PathVariable Integer personid, @PathVariable Integer addressid, @RequestBody AddressModel address){
+		return addressService.updateAddressDetails(personid, addressid, address);
 	}
 
 	/*
@@ -142,8 +95,7 @@ public class PersonController {
 	 */
 	@DeleteMapping("/person/update/{personid}/address/{addressid}/delete")
 	public String deleteAddressById(@PathVariable Integer addressid){
-		addressService.deleteAddressById(addressid);
-		return "deleted +address ID: "+addressid;
+		return addressService.deleteAddressById(addressid);
 		//throw new RuntimeException("Employee not found");
 	}
 }
