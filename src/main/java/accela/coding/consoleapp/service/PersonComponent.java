@@ -31,7 +31,7 @@ public class PersonComponent implements PersonService{
                 }
             }
             personRepository.save(person);
-            result = "Person with first name: "+ person.getPersonfirstname() + "and last name: "+ person.getPersonlastname()+ " added successfully";
+            result = "Person with first name: "+ person.getPersonfirstname() + " and last name: "+ person.getPersonlastname()+ " added successfully";
         } else {
             throw new InvalidUserInputException();
         }

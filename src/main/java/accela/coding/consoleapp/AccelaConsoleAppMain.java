@@ -4,11 +4,14 @@ import accela.coding.consoleapp.model.AddressModel;
 import accela.coding.consoleapp.model.PersonModel;
 import accela.coding.consoleapp.repository.AddressRepository;
 import accela.coding.consoleapp.repository.PersonRepository;
+import accela.coding.consoleapp.service.PersonComponent;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -25,7 +28,7 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	@Autowired
 	private AddressRepository addr;
 
-	Scanner sc = new Scanner(System.in);
+	Scanner sc = new Scanner(System.in).useDelimiter("\n");
 
 	public AccelaConsoleAppMain() {
 	}
@@ -94,28 +97,36 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 
 	private void inputPerson() {
 		PersonModel result = null;
-		//Scanner sc = new Scanner(System.in);
 		System.out.println("Enter First Name:");
-		String firstName = sc.nextLine();
+		String firstName = sc.next();
+		sc.nextLine();
 		System.out.println("Enter Last Name:");
-		String lastName = sc.nextLine();
+		String lastName = sc.next();
+		sc.nextLine();
 		PersonModel person = new PersonModel(firstName, lastName);
 		System.out.println("Do you have a valid address? (Yes/No)");
-		String addressYesNo = sc.nextLine();
+		String addressYesNo = sc.next();
+		sc.nextLine();
 		if("yes".equals(addressYesNo.toLowerCase())) {
 			System.out.println("How many addresses do you want to add? (More than 1 allowed)");
 			int addressCount = sc.nextInt();
 			List<AddressModel> address = new ArrayList<>();
+			int count;
 			for(int i = 0; i < addressCount; i++) {
-				System.out.println("Enter address "+i+1+" details:");
+				count = i+1;
+				System.out.println("Enter address "+count+" details:");
 				System.out.println("Enter the street:");
-				String street = sc.nextLine();
+				String street = sc.next();
+				sc.nextLine();
 				System.out.println("Enter the city:");
-				String city = sc.nextLine();
+				String city = sc.next();
+				sc.nextLine();
 				System.out.println("Enter the state:");
-				String state = sc.nextLine();
+				String state = sc.next();
+				sc.nextLine();
 				System.out.println("Enter the zipcode:");
-				String zipcode = sc.nextLine();
+				String zipcode = sc.next();
+				sc.nextLine();
 				AddressModel addressModel = new AddressModel(street, city, state, zipcode, person);
 				address.add(addressModel);
 			}
@@ -136,10 +147,13 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	private void editPerson() {
 		System.out.println("Enter The person ID:");
 		int id = sc.nextInt();
+		sc.nextLine();
 		System.out.println("Enter First Name to change:");
-		String firstName = sc.nextLine();
+		String firstName = sc.next();
+		sc.nextLine();
 		System.out.println("Enter Last Name to change:");
-		String lastName = sc.nextLine();
+		String lastName = sc.next();
+		sc.nextLine();
 		PersonModel person = new PersonModel(firstName, lastName);
 		PersonModel personModel = per.findById(id).orElse(null);
 		Optional<PersonModel> personResult = Optional.ofNullable(personModel);
@@ -162,6 +176,7 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	{
 		System.out.println("Enter The person ID:");
 		int id = sc.nextInt();
+		sc.nextLine();
 		per.deleteById(id);
 		System.out.println("******************************************************************************");
 		System.out.println("Person with person ID: "+id +" deleted successfully.");
@@ -170,17 +185,21 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	}
 
 	private void inputAddress() {
-		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter The person ID:");
 		int id = sc.nextInt();
+		sc.nextLine();
 		System.out.println("Enter the street:");
-		String street = sc.nextLine();
+		String street = sc.next();
+		sc.nextLine();
 		System.out.println("Enter the city:");
-		String city = sc.nextLine();
+		String city = sc.next();
+		sc.nextLine();
 		System.out.println("Enter the state:");
-		String state = sc.nextLine();
+		String state = sc.next();
+		sc.nextLine();
 		System.out.println("Enter the zipcode:");
-		String zipcode = sc.nextLine();
+		String zipcode = sc.next();
+		sc.nextLine();
 		PersonModel personModel = per.findById(id).orElse(null);
 		Optional<PersonModel> personResult = Optional.ofNullable(personModel);
 		if(personResult.isPresent()) {
@@ -199,19 +218,24 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	}
 
 	private void editAddress() {
-		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter The person ID:");
 		int pid = sc.nextInt();
+		sc.nextLine();
 		System.out.println("Enter The Address ID:");
 		int aid = sc.nextInt();
+		sc.nextLine();
 		System.out.println("Enter the street:");
-		String street = sc.nextLine();
+		String street = sc.next();
+		sc.nextLine();
 		System.out.println("Enter the city:");
-		String city = sc.nextLine();
+		String city = sc.next();
+		sc.nextLine();
 		System.out.println("Enter the state:");
-		String state = sc.nextLine();
+		String state = sc.next();
+		sc.nextLine();
 		System.out.println("Enter the zipcode:");
-		String zipcode = sc.nextLine();
+		String zipcode = sc.next();
+		sc.nextLine();
 		AddressModel address = new AddressModel();
 		address.setStreet(street);
 		address.setCity(city);
@@ -247,9 +271,9 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	}
 
 	private void deleteAddress() {
-		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter The Address ID:");
 		int id = sc.nextInt();
+		sc.nextLine();
 		addr.deleteById(id);
 		System.out.println("******************************************************************************");
 		System.out.println("Address with address ID: "+id +" deleted successfully.");
@@ -265,12 +289,37 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 		operations();
 	}
 
+	@Transactional
 	private void listPersons() {
-		/*List<PersonModel> list = (List<PersonModel>) per.findAll();
-		for(PersonModel l : list) {
-		l.ge
+		List<PersonModel> list;
+		list = (List<PersonModel>) per.findAll();
+		int count  = 1;
+		if(list.isEmpty()) {
+			System.out.println("No info available");
+		} else {
+			System.out.println("Total result found: "+list.size());
+			for(PersonModel l : list) {
+				System.out.println("******************************************************************************");
+				System.out.println("Person "+count+" details:");
+				System.out.println("PersonID: "+l.getPid());
+				System.out.println("First Name: "+l.getPersonfirstname());
+				System.out.println("Last Name: "+l.getPersonlastname());
+				List<AddressModel> addressModel = addr.getAddressByPersonId(l.getPid());
+				int addrCount = 1;
+				System.out.println("Total address available for person "+count+" is "+addressModel.size());
+				for(AddressModel laddr : addressModel) {
+					System.out.println("Address "+addrCount+ " details");
+					System.out.println("Address ID: "+laddr.getAid());
+					System.out.println("Street: "+ laddr.getStreet());
+					System.out.println("City: "+laddr.getCity());
+					System.out.println("State: "+laddr.getState());
+					System.out.println("Zipcode: "+laddr.getZipcode());
+					addrCount++;
+				}
+				count++;
+			}
 		}
-		operations();*/
+		operations();
 	}
 
 	/**
@@ -295,8 +344,8 @@ public class AccelaConsoleAppMain implements CommandLineRunner {
 	 * @param url url to connect to db
 	 */
 	private static void createNewTables(String url) {
-		String sqlPerson = "CREATE TABLE IF NOT EXISTS Person (pid integer PRIMARY KEY AUTOINCREMENT, personfirstname text NOT NULL,personlastname real);";
-		String sqlAddress = "CREATE TABLE IF NOT EXISTS Address (aid integer PRIMARY KEY AUTOINCREMENT, street text, city text, state text, zipcode text, person_id integer NOT NULL, \n" +
+		String sqlPerson = "CREATE TABLE IF NOT EXISTS Person (\"pid\" integer PRIMARY KEY AUTOINCREMENT, \"personfirstname\" text NOT NULL,\"personlastname\" real);";
+		String sqlAddress = "CREATE TABLE IF NOT EXISTS Address (\"aid\" integer PRIMARY KEY AUTOINCREMENT, \"street\" text, \"city\" text, \"state\" text, \"zipcode\" text, \"person_id\" integer NOT NULL, \n" +
 				"FOREIGN KEY (person_id)\n" +
 				"REFERENCES Person(pid) ON DELETE CASCADE)";
 		try (Connection conn = DriverManager.getConnection(url);
