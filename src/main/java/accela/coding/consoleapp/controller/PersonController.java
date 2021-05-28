@@ -4,15 +4,18 @@ import accela.coding.consoleapp.model.AddressModel;
 import accela.coding.consoleapp.model.PersonModel;
 import accela.coding.consoleapp.service.AddressService;
 import accela.coding.consoleapp.service.PersonService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/rest")
 public class PersonController {
-	
+	Logger logger = LoggerFactory.getLogger("started");
 	@Autowired
 	private PersonService personService;
 
@@ -47,6 +50,7 @@ public class PersonController {
 	 */
 	@PatchMapping("/person/update/{personid}")
 	public String updatePersonById(@PathVariable Integer personid, @RequestBody PersonModel person) {
+		//RestTemplate rest = new RestTemplate();
 		return personService.updatePersonByPersonId(personid, person);
 	}
 

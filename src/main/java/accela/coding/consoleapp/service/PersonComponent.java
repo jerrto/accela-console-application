@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @Component
 public class PersonComponent implements PersonService{
@@ -30,6 +32,7 @@ public class PersonComponent implements PersonService{
                     item.setPerson(person);
                 }
             }
+            //add.forEach(addressModel -> addressModel.getState());
             personRepository.save(person);
             result = "Person with first name: "+ person.getPersonfirstname() + " and last name: "+ person.getPersonlastname()+ " added successfully";
         } else {
